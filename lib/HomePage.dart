@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -8,6 +9,42 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  // Show confirmation dialog before logout
+  void _showLogoutConfirmation() {
+    AwesomeDialog(
+      context: context,
+      dialogType: DialogType.warning,
+      animType: AnimType.topSlide,
+      title: 'Logout Confirmation',
+      desc: 'Are you sure you want to logout?',
+      btnCancelText: 'Cancel',
+      btnCancelColor: Colors.grey,
+      btnCancelOnPress: () {},
+      btnOkText: 'Yes, Logout',
+      btnOkColor: Colors.deepPurple,
+      btnOkOnPress: () {
+        _showLogoutSuccess(); // Show success modal after confirmation
+      },
+    ).show();
+  }
+
+  // Show success dialog after logout
+  void _showLogoutSuccess() {
+    AwesomeDialog(
+      context: context,
+      dialogType: DialogType.success,
+      animType: AnimType.scale,
+      title: 'Success',
+      desc: 'You have successfully logged out!',
+      btnOkText: 'OK',
+      btnOkColor: Colors.deepPurple,
+      btnOkOnPress: () {
+        // Navigate back to the login page
+        Navigator.pushReplacementNamed(context, '/');
+      },
+    ).show();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,7 +78,6 @@ class _HomePageState extends State<HomePage> {
               leading: Icon(Icons.calendar_today),
               title: const Text('Calendar'),
               onTap: () {
-                // Handle navigation to Calendar page
                 Navigator.pop(context);
               },
             ),
@@ -49,7 +85,6 @@ class _HomePageState extends State<HomePage> {
               leading: Icon(Icons.access_time),
               title: const Text('My TimeSheet'),
               onTap: () {
-                // Handle navigation to TimeSheet page
                 Navigator.pop(context);
               },
             ),
@@ -57,7 +92,6 @@ class _HomePageState extends State<HomePage> {
               leading: Icon(Icons.beach_access),
               title: const Text('My Leaves'),
               onTap: () {
-                // Handle navigation to Leaves page
                 Navigator.pop(context);
               },
             ),
@@ -65,7 +99,6 @@ class _HomePageState extends State<HomePage> {
               leading: Icon(Icons.settings),
               title: const Text('Settings'),
               onTap: () {
-                // Handle navigation to Settings page
                 Navigator.pop(context);
               },
             ),
@@ -73,8 +106,7 @@ class _HomePageState extends State<HomePage> {
               leading: Icon(Icons.logout),
               title: const Text('Logout'),
               onTap: () {
-                // Handle logout action
-                Navigator.pop(context);
+                _showLogoutConfirmation(); // Show confirmation dialog
               },
             ),
           ],
@@ -113,10 +145,9 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             SizedBox(height: 30),
-            // Two cards per row
             Expanded(
               child: GridView.count(
-                crossAxisCount: 2, // 2 cards per row
+                crossAxisCount: 2,
                 crossAxisSpacing: 16,
                 mainAxisSpacing: 16,
                 children: <Widget>[
@@ -126,9 +157,7 @@ class _HomePageState extends State<HomePage> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: InkWell(
-                      onTap: () {
-                        // Handle tap on My Leaves
-                      },
+                      onTap: () {},
                       child: Container(
                         padding: EdgeInsets.all(16),
                         child: Column(
@@ -153,9 +182,7 @@ class _HomePageState extends State<HomePage> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: InkWell(
-                      onTap: () {
-                        // Handle tap on My Tasks
-                      },
+                      onTap: () {},
                       child: Container(
                         padding: EdgeInsets.all(16),
                         child: Column(
@@ -174,16 +201,13 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                   ),
-                  // Add more cards as needed
                   Card(
                     elevation: 8.0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: InkWell(
-                      onTap: () {
-                        // Handle tap on another option
-                      },
+                      onTap: () {},
                       child: Container(
                         padding: EdgeInsets.all(16),
                         child: Column(
@@ -208,9 +232,7 @@ class _HomePageState extends State<HomePage> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: InkWell(
-                      onTap: () {
-                        // Handle tap on another option
-                      },
+                      onTap: () {},
                       child: Container(
                         padding: EdgeInsets.all(16),
                         child: Column(
