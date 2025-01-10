@@ -41,6 +41,7 @@ dependencies:
   awesome_dialog: ^3.2.1
   http: ^1.2.2
   weather_icons: ^3.0.0
+  flutter_dotenv: ^5.2.1
 
 dev_dependencies:
   flutter_test:

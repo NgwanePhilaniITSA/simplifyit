@@ -26,16 +26,24 @@ class _HomePageState extends State<HomePage> {
 
   // Function to load weather, temperature, and time data asynchronously
   Future<void> _loadData() async {
-    await Future.wait([
-      _homeController.fetchWeather(),
-      _homeController.fetchTemperature(),
-    ]);
-    setState(() {
-      // Update weather and temperature values when data is fetched
-      weather = "Cloudy"; // Example data
-      temperature = "22"; // Example data
-      time = "1:15 PM"; // Example data
-    });
+    try {
+      // Fetch weather and temperature asynchronously
+      String fetchedWeather = await _homeController.fetchWeather();
+      String fetchedTemperature = await _homeController.fetchTemperature();
+
+      setState(() {
+        // Update weather and temperature values with real data from API
+        weather = fetchedWeather;
+        temperature = fetchedTemperature;
+
+        // Update the time based on system time
+        time =
+            "${DateTime.now().hour}:${DateTime.now().minute}:${DateTime.now().second}";
+      });
+    } catch (e) {
+      // Handle any errors that might occur when fetching the data
+      print('Error loading data: $e');
+    }
   }
 
   @override

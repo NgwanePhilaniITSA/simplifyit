@@ -2,31 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 
-import 'HomePage.dart';
-
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Login Demo',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const LoginPage(),
-      routes: {
-        '/home': (context) => const HomePage(),
-      },
-    );
-  }
-}
+import 'Controllers/AccountController.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -39,38 +15,12 @@ class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  late final AccountController _accountController;
 
-  // Method to show a SweetAlert-like modal with a blinking "X" icon
-  void _showErrorModal(String message) {
-    AwesomeDialog(
-      context: context,
-      dialogType: DialogType.error,
-      animType: AnimType.topSlide,
-      title: 'Error',
-      desc: message,
-      btnOkText: 'OK',
-      btnOkColor: Colors.deepPurple,
-      btnOkOnPress: () {},
-    ).show();
-  }
-
-  void _showSuccessModal() {
-    AwesomeDialog(
-      context: context,
-      dialogType: DialogType.success,
-      animType: AnimType.topSlide,
-      title: 'Success',
-      desc: 'Login Successful!',
-      btnOkText: 'OK',
-      btnOkColor: Colors.deepPurple,
-      btnOkOnPress: () {
-        // Navigate to HomePage after the success dialog is closed
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const HomePage()),
-        );
-      },
-    ).show();
+  @override
+  void initState() {
+    super.initState();
+    _accountController = AccountController();
   }
 
   @override
@@ -155,11 +105,12 @@ class _LoginPageState extends State<LoginPage> {
                   // Login Button
                   ElevatedButton(
                     onPressed: () {
-                      if (_formKey.currentState?.validate() ?? false) {
-                        _showSuccessModal();
-                      } else {
-                        _showErrorModal('Please fix the errors in the form.');
-                      }
+                      _accountController.login(
+                        context,
+                        _emailController.text,
+                        _passwordController.text,
+                        _formKey,
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.deepPurple,

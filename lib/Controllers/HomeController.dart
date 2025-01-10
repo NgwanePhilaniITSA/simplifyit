@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:simplifyit/Login.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 import '../main.dart';
 
 class HomeController {
   final BuildContext context;
 
-  // Constructor
   HomeController(this.context);
 
   // Method to show logout confirmation
@@ -21,14 +21,35 @@ class HomeController {
       btnOkText: 'Yes',
       btnCancelText: 'No',
       btnOkOnPress: () {
-        // Perform logout action here
-        // You can add actual logout logic (e.g., clearing session or navigating to login page)
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const LandingPage()),
-        );
+        // Show Logout Success dialog before navigating
+        _showLogoutSuccess(context);
+
+        // Optionally perform logout logic (clear session, etc.)
+        // Navigate to the landing page after showing the success dialog
+        Future.delayed(const Duration(seconds: 2), () {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const LandingPage()),
+            (Route<dynamic> route) => false,
+          );
+        });
       },
       btnCancelOnPress: () {},
+    ).show();
+  }
+
+  // Method to show Logout Success dialog
+  void _showLogoutSuccess(BuildContext context) {
+    AwesomeDialog(
+      context: context,
+      dialogType: DialogType.success,
+      animType: AnimType.topSlide,
+      title: 'Logout Success',
+      desc: 'You have successfully logged out.',
+      btnOkText: 'Okay',
+      btnOkOnPress: () {
+        // Optionally handle any further action after the success dialog
+      },
     ).show();
   }
 
@@ -39,15 +60,29 @@ class HomeController {
     return Future.delayed(const Duration(seconds: 1), () => formattedTime);
   }
 
-  // Method to fetch weather data asynchronously (e.g., could be an API call)
+  // Method to fetch weather data asynchronously (real-time via an API)
   Future<String> fetchWeather() async {
-    // Placeholder weather data; replace with an actual API call if necessary
-    return Future.delayed(const Duration(seconds: 1), () => "Sunny");
+    final response = await http.get(Uri.parse(
+        'https://api.weatherapi.com/v1/current.json?key=64652500fd191149459573a5caa14049&q=Durban'));
+
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      return data['current']['condition']['text']; // Example: "Sunny"
+    } else {
+      throw Exception('Failed to load weather data');
+    }
   }
 
-  // Method to fetch temperature asynchronously (e.g., could be an API call)
+  // Method to fetch temperature asynchronously (real-time via an API)
   Future<String> fetchTemperature() async {
-    // Placeholder temperature; replace with an actual API call if necessary
-    return Future.delayed(const Duration(seconds: 1), () => "28°C");
+    final response = await http.get(Uri.parse(
+        'https://api.weatherapi.com/v1/current.json?key=64652500fd191149459573a5caa14049&q=Durban'));
+
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      return "${data['current']['temp_c']}°C"; // Example: "28°C"
+    } else {
+      throw Exception('Failed to load temperature data');
+    }
   }
 }
