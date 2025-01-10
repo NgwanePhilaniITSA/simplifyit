@@ -40,6 +40,7 @@ dependencies:
   responsive_framework: ^1.5.1
   awesome_dialog: ^3.2.1
   http: ^1.2.2
+  weather_icons: ^3.0.0
 
 dev_dependencies:
   flutter_test:

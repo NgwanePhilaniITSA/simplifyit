@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'Components/Cards/BigCard.dart'; // Import BigCard component
+import 'Components/Cards/CustomeCard.dart'; // Import other necessary components
+import 'Controllers/HomeController.dart'; // Import HomeController
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -9,40 +12,30 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // Show confirmation dialog before logout
-  void _showLogoutConfirmation() {
-    AwesomeDialog(
-      context: context,
-      dialogType: DialogType.warning,
-      animType: AnimType.topSlide,
-      title: 'Logout Confirmation',
-      desc: 'Are you sure you want to logout?',
-      btnCancelText: 'Cancel',
-      btnCancelColor: Colors.grey,
-      btnCancelOnPress: () {},
-      btnOkText: 'Yes, Logout',
-      btnOkColor: Colors.deepPurple,
-      btnOkOnPress: () {
-        _showLogoutSuccess(); // Show success modal after confirmation
-      },
-    ).show();
+  late final HomeController _homeController;
+  String time = "12:30 PM";
+  String weather = "Sunny";
+  String temperature = "25"; // Default data for testing
+
+  @override
+  void initState() {
+    super.initState();
+    _homeController = HomeController(context);
+    _loadData(); // Load data as soon as the widget is initialized
   }
 
-  // Show success dialog after logout
-  void _showLogoutSuccess() {
-    AwesomeDialog(
-      context: context,
-      dialogType: DialogType.success,
-      animType: AnimType.scale,
-      title: 'Success',
-      desc: 'You have successfully logged out!',
-      btnOkText: 'OK',
-      btnOkColor: Colors.deepPurple,
-      btnOkOnPress: () {
-        // Navigate back to the login page
-        Navigator.pushReplacementNamed(context, '/');
-      },
-    ).show();
+  // Function to load weather, temperature, and time data asynchronously
+  Future<void> _loadData() async {
+    await Future.wait([
+      _homeController.fetchWeather(),
+      _homeController.fetchTemperature(),
+    ]);
+    setState(() {
+      // Update weather and temperature values when data is fetched
+      weather = "Cloudy"; // Example data
+      temperature = "22"; // Example data
+      time = "1:15 PM"; // Example data
+    });
   }
 
   @override
@@ -65,7 +58,7 @@ class _HomePageState extends State<HomePage> {
                   end: Alignment.bottomRight,
                 ),
               ),
-              child: Text(
+              child: const Text(
                 'SimplifyIT Menu',
                 style: TextStyle(
                   color: Colors.white,
@@ -74,41 +67,13 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
-            ListTile(
-              leading: Icon(Icons.calendar_today),
-              title: const Text('Calendar'),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.access_time),
-              title: const Text('My TimeSheet'),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.beach_access),
-              title: const Text('My Leaves'),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.settings),
-              title: const Text('Settings'),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.logout),
-              title: const Text('Logout'),
-              onTap: () {
-                _showLogoutConfirmation(); // Show confirmation dialog
-              },
-            ),
+            _buildDrawerItem(Icons.calendar_today, 'Calendar', () {}),
+            _buildDrawerItem(Icons.access_time, 'My TimeSheet', () {}),
+            _buildDrawerItem(Icons.beach_access, 'My Leaves', () {}),
+            _buildDrawerItem(Icons.settings, 'Settings', () {}),
+            _buildDrawerItem(Icons.logout, 'Logout', () {
+              _homeController.showLogoutConfirmation(context);
+            }),
           ],
         ),
       ),
@@ -117,144 +82,90 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            AnimatedOpacity(
-              opacity: 1.0,
-              duration: Duration(seconds: 1),
-              child: Center(
-                child: TweenAnimationBuilder(
-                  tween: Tween<double>(begin: 20.0, end: 40.0),
-                  duration: Duration(seconds: 2),
-                  builder: (context, value, child) {
-                    return Text(
-                      "Welcome to SimplifyIT!",
-                      style: TextStyle(
-                        fontSize: value,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.deepPurple,
-                        shadows: [
-                          Shadow(
-                            blurRadius: 10.0,
-                            color: Colors.black.withOpacity(0.5),
-                            offset: Offset(3.0, 3.0),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ),
+            _buildWelcomeText(),
+            const SizedBox(height: 30),
+            // BigCard displaying real-time data
+            BigCard(
+              time: time,
+              weather: weather,
+              temperature: temperature,
             ),
-            SizedBox(height: 30),
+            const SizedBox(height: 20),
+            // Grid of CustomCards
             Expanded(
               child: GridView.count(
                 crossAxisCount: 2,
                 crossAxisSpacing: 16,
                 mainAxisSpacing: 16,
                 children: <Widget>[
-                  Card(
-                    elevation: 8.0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: InkWell(
-                      onTap: () {},
-                      child: Container(
-                        padding: EdgeInsets.all(16),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.beach_access,
-                                size: 50, color: Colors.deepPurple),
-                            SizedBox(height: 10),
-                            Text(
-                              'My Leaves',
-                              style: TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                  CustomCard(
+                    icon: Icons.beach_access,
+                    title: 'My Leaves',
+                    description: 'View your leave balances',
+                    onTap: () {},
                   ),
-                  Card(
-                    elevation: 8.0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: InkWell(
-                      onTap: () {},
-                      child: Container(
-                        padding: EdgeInsets.all(16),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.check_circle,
-                                size: 50, color: Colors.deepPurple),
-                            SizedBox(height: 10),
-                            Text(
-                              'My Tasks',
-                              style: TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                  CustomCard(
+                    icon: Icons.check_circle,
+                    title: 'My Tasks',
+                    description: 'View your tasks for the day',
+                    onTap: () {},
                   ),
-                  Card(
-                    elevation: 8.0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: InkWell(
-                      onTap: () {},
-                      child: Container(
-                        padding: EdgeInsets.all(16),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.assignment,
-                                size: 50, color: Colors.deepPurple),
-                            SizedBox(height: 10),
-                            Text(
-                              'My Assignments',
-                              style: TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                  CustomCard(
+                    icon: Icons.assignment,
+                    title: 'My Assignments',
+                    description: 'Check your assignments',
+                    onTap: () {},
                   ),
-                  Card(
-                    elevation: 8.0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: InkWell(
-                      onTap: () {},
-                      child: Container(
-                        padding: EdgeInsets.all(16),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.work,
-                                size: 50, color: Colors.deepPurple),
-                            SizedBox(height: 10),
-                            Text(
-                              'Work Overview',
-                              style: TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                  CustomCard(
+                    icon: Icons.work,
+                    title: 'Work Overview',
+                    description: 'Get an overview of your work',
+                    onTap: () {},
                   ),
                 ],
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  // Helper function to build menu items in the drawer
+  ListTile _buildDrawerItem(IconData icon, String title, VoidCallback onTap) {
+    return ListTile(
+      leading: Icon(icon),
+      title: Text(title),
+      onTap: onTap,
+    );
+  }
+
+  // Helper function to build animated welcome text
+  Widget _buildWelcomeText() {
+    return AnimatedOpacity(
+      opacity: 1.0,
+      duration: const Duration(seconds: 1),
+      child: Center(
+        child: TweenAnimationBuilder(
+          tween: Tween<double>(begin: 20.0, end: 40.0),
+          duration: const Duration(seconds: 2),
+          builder: (context, value, child) {
+            return Text(
+              "Welcome to SimplifyIT!",
+              style: TextStyle(
+                fontSize: value,
+                fontWeight: FontWeight.bold,
+                color: Colors.deepPurple,
+                shadows: [
+                  Shadow(
+                    blurRadius: 10.0,
+                    color: Colors.black.withOpacity(0.5),
+                    offset: const Offset(3.0, 3.0),
+                  ),
+                ],
+              ),
+            );
+          },
         ),
       ),
     );
