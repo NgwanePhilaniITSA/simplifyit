@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:simplifyit/Login.dart'; // Ensure this import is correct for your project
+import 'package:simplifyit/Login.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../HomePage.dart'; // Ensure this import is correct for your project
 
@@ -46,6 +47,26 @@ class AccountController {
     } else {
       _showErrorModal(context, 'Please fix the errors in the form.');
     }
+  }
+
+  Future<void> clearUserSession(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    await prefs.remove('auth_token');
+    await prefs.remove('user_id');
+    await prefs.remove('username');
+    await prefs.remove('email');
+
+    await prefs.remove('user_role');
+    await prefs.remove('last_activity');
+    await prefs.remove('user_locale');
+
+    await prefs.clear();
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginPage()),
+    );
   }
 
   // Show success modal and navigate to HomePage

@@ -45,9 +45,8 @@ class _LandingPageState extends State<LandingPage>
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 4),
-    )..repeat(reverse: true); // Loop the animation with a reverse effect
+    )..repeat(reverse: true);
 
-    // Initialize the fade animation
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(_controller);
 
     // Initialize the background color animation

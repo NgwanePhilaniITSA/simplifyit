@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 
+import 'Controllers/AccountController.dart';
 import 'main.dart';
 
 class HomeController {
   final BuildContext context;
+  late final AccountController _accountController;
 
   HomeController(this.context);
 
@@ -19,11 +21,8 @@ class HomeController {
       btnOkText: 'Yes',
       btnCancelText: 'No',
       btnOkOnPress: () {
-        // Show Logout Success dialog before navigating
         _showLogoutSuccess(context);
 
-        // Optionally perform logout logic (clear session, etc.)
-        // Navigate to the landing page after showing the success dialog
         Future.delayed(const Duration(seconds: 2), () {
           Navigator.pushAndRemoveUntil(
             context,
@@ -46,7 +45,7 @@ class HomeController {
       desc: 'You have successfully logged out.',
       btnOkText: 'Okay',
       btnOkOnPress: () {
-        // Optionally handle any further action after the success dialog
+        _accountController.clearUserSession(context);
       },
     ).show();
   }
