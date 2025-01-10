@@ -17,6 +17,8 @@ class _HomePageState extends State<HomePage> {
   String weather = "Sunny";
   String temperature = "25"; // Default data for testing
 
+  int notificationsCount = 5; // Example notification count
+
   @override
   void initState() {
     super.initState();
@@ -50,7 +52,46 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: Colors.white,
+        actions: [
+          // Notification icon with badge
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              IconButton(
+                icon: Icon(Icons.notifications),
+                onPressed: () {
+                  // Action when notification icon is pressed
+                  AwesomeDialog(
+                    context: context,
+                    dialogType: DialogType.info,
+                    body: Center(
+                      child:
+                          Text('You have $notificationsCount unread messages'),
+                    ),
+                    btnOkOnPress: () {},
+                  ).show();
+                },
+              ),
+              if (notificationsCount > 0)
+                Positioned(
+                  right: 0,
+                  top: 0,
+                  child: CircleAvatar(
+                    radius: 10,
+                    backgroundColor: Colors.red,
+                    child: Text(
+                      notificationsCount.toString(),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ],
       ),
       drawer: Drawer(
         child: ListView(
