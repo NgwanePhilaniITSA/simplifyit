@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'Controllers/AccountController.dart';
-import 'ForgotPassword.dart';
-import 'Views/Account/Register.dart'; // Import your RegisterPage
+import 'package:awesome_dialog/awesome_dialog.dart';
+import '../../Controllers/AccountController.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _RegisterPageState extends State<RegisterPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   late final AccountController _accountController;
 
@@ -21,6 +21,37 @@ class _LoginPageState extends State<LoginPage> {
   void initState() {
     super.initState();
     _accountController = AccountController();
+  }
+
+  // Show Success Message
+  void _showRegisterSuccessDialog() {
+    AwesomeDialog(
+      context: context,
+      dialogType: DialogType.success,
+      animType: AnimType.topSlide,
+      title: 'Success',
+      desc: 'Registration Successful!',
+      btnOkText: 'OK',
+      btnOkColor: Colors.green,
+      btnOkOnPress: () {
+        // Navigate to Home or Login Page
+        Navigator.pop(context); // Close the dialog
+      },
+    ).show();
+  }
+
+  // Show Error Message
+  void _showErrorDialog(String message) {
+    AwesomeDialog(
+      context: context,
+      dialogType: DialogType.error,
+      animType: AnimType.topSlide,
+      title: 'Error',
+      desc: message,
+      btnOkText: 'OK',
+      btnOkColor: Colors.red,
+      btnOkOnPress: () {},
+    ).show();
   }
 
   @override
@@ -31,9 +62,9 @@ class _LoginPageState extends State<LoginPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Header: Login to SimplifyIT account
+            // Header: Create or Update Account
             Text(
-              "Login to SimplifyIT account",
+              "Create or Update Account",
               style: GoogleFonts.poppins(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -43,7 +74,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             const SizedBox(height: 40),
 
-            // Circular Icon Container with Login Icon
+            // Circular Icon Container with Account Icon
             Container(
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
@@ -51,19 +82,19 @@ class _LoginPageState extends State<LoginPage> {
               ),
               padding: const EdgeInsets.all(20),
               child: const Icon(
-                Icons.login,
+                Icons.person_add,
                 color: Colors.deepPurple,
                 size: 50,
               ),
             ),
             const SizedBox(height: 40),
 
-            // Login Form
+            // Registration/Update Form
             Form(
               key: _formKey,
               child: Column(
                 children: [
-                  // Email Field with leading icon
+                  // Email Field
                   TextFormField(
                     controller: _emailController,
                     decoration: InputDecoration(
@@ -77,12 +108,15 @@ class _LoginPageState extends State<LoginPage> {
                       if (value == null || value.isEmpty) {
                         return "Please enter your email";
                       }
+                      if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                        return "Please enter a valid email address";
+                      }
                       return null;
                     },
                   ),
                   const SizedBox(height: 20),
 
-                  // Password Field with leading icon
+                  // Password Field
                   TextFormField(
                     controller: _passwordController,
                     obscureText: true,
@@ -97,47 +131,52 @@ class _LoginPageState extends State<LoginPage> {
                       if (value == null || value.isEmpty) {
                         return "Please enter your password";
                       }
+                      if (value.length < 6) {
+                        return "Password must be at least 6 characters long";
+                      }
                       return null;
                     },
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 20),
 
-                  // Forgot Password Link
-                  Row(
-                    children: [
-                      const Spacer(), // Pushes the text to the right
-                      GestureDetector(
-                        onTap: () {
-                          // Navigate to Forgot Password Page
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const ForgotPasswordPage(),
-                            ),
-                          );
-                        },
-                        child: Text(
-                          "Forgot Password?",
-                          style: GoogleFonts.poppins(
-                            fontSize: 14,
-                            color: Colors.deepPurple,
-                            decoration: TextDecoration.underline,
-                          ),
-                        ),
+                  // Confirm Password Field
+                  TextFormField(
+                    controller: _confirmPasswordController,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      labelText: "Confirm Password",
+                      prefixIcon: const Icon(Icons.lock_outline),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
                       ),
-                    ],
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Please confirm your password";
+                      }
+                      if (value != _passwordController.text) {
+                        return "Passwords do not match";
+                      }
+                      return null;
+                    },
                   ),
                   const SizedBox(height: 30),
 
-                  // Login Button
+                  // Register Button
                   ElevatedButton(
                     onPressed: () {
-                      _accountController.login(
-                        context,
-                        _emailController.text,
-                        _passwordController.text,
-                        _formKey,
-                      );
+                      if (_formKey.currentState!.validate()) {
+                        _accountController.register(
+                          context,
+                          _emailController.text,
+                          _emailController.text, // username as email for now
+                          _passwordController.text,
+                          _formKey,
+                        );
+                        _showRegisterSuccessDialog(); // Show success dialog on successful registration
+                      } else {
+                        _showErrorDialog("Please fix the errors in the form.");
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.deepPurple,
@@ -152,16 +191,17 @@ class _LoginPageState extends State<LoginPage> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    child: const Text("Login"),
+                    child: const Text("Register"),
                   ),
+
                   const SizedBox(height: 20),
 
-                  // Don't have an account? Register here
+                  // Navigation to Login Page
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        "Don't have an account?",
+                        "Already have an account?",
                         style: GoogleFonts.poppins(
                           fontSize: 14,
                           color: Colors.black54,
@@ -170,16 +210,10 @@ class _LoginPageState extends State<LoginPage> {
                       const SizedBox(width: 5),
                       GestureDetector(
                         onTap: () {
-                          // Navigate to Register Page
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const RegisterPage(),
-                            ),
-                          );
+                          Navigator.pop(context); // Go back to Login Page
                         },
                         child: Text(
-                          "Register here",
+                          "Login here",
                           style: GoogleFonts.poppins(
                             fontSize: 14,
                             color: Colors.deepPurple,

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:simplifyit/HomePage.dart';
+import 'package:simplifyit/Login.dart'; // Ensure this import is correct for your project
+
+import '../HomePage.dart'; // Ensure this import is correct for your project
 
 class AccountController {
   // Method for Login
@@ -15,11 +17,10 @@ class AccountController {
   }
 
   // Method for Register
-  void register(BuildContext context, String username, String email,
-      String password, GlobalKey<FormState> formKey) {
+  void register(BuildContext context, String email, String password,
+      String confirmpassword, GlobalKey<FormState> formKey) {
     if (formKey.currentState?.validate() ?? false) {
-      // Simulating register success for now
-      _showSuccessModal(context);
+      _showRegisterSuccessDialog(context); // Show registration success dialog
     } else {
       _showErrorModal(context, 'Please fix the errors in the form.');
     }
@@ -47,7 +48,7 @@ class AccountController {
     }
   }
 
-  // Show success modal
+  // Show success modal and navigate to HomePage
   void _showSuccessModal(BuildContext context) {
     AwesomeDialog(
       context: context,
@@ -69,6 +70,26 @@ class AccountController {
         color: Colors.green,
         size: 50,
       ),
+    ).show();
+  }
+
+  // Show success modal for registration and navigate to LoginPage
+  void _showRegisterSuccessDialog(BuildContext context) {
+    AwesomeDialog(
+      context: context,
+      dialogType: DialogType.success,
+      animType: AnimType.topSlide,
+      title: 'Success',
+      desc: 'Registration Successful!',
+      btnOkText: 'OK',
+      btnOkColor: Colors.green,
+      btnOkOnPress: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => const LoginPage()), // Navigate to LoginPage
+        );
+      },
     ).show();
   }
 

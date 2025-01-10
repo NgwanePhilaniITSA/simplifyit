@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
-import '../main.dart';
+import 'main.dart';
 
 class HomeController {
   final BuildContext context;
@@ -60,29 +58,13 @@ class HomeController {
     return Future.delayed(const Duration(seconds: 1), () => formattedTime);
   }
 
-  // Method to fetch weather data asynchronously (real-time via an API)
+  // Method to fetch weather data asynchronously (e.g., could be an API call)
   Future<String> fetchWeather() async {
-    final response = await http.get(Uri.parse(
-        'https://api.weatherapi.com/v1/current.json?key=64652500fd191149459573a5caa14049&q=Durban'));
-
-    if (response.statusCode == 200) {
-      var data = jsonDecode(response.body);
-      return data['current']['condition']['text']; // Example: "Sunny"
-    } else {
-      throw Exception('Failed to load weather data');
-    }
+    return Future.delayed(const Duration(seconds: 1), () => "Sunny");
   }
 
-  // Method to fetch temperature asynchronously (real-time via an API)
+  // Method to fetch temperature asynchronously (e.g., could be an API call)
   Future<String> fetchTemperature() async {
-    final response = await http.get(Uri.parse(
-        'https://api.weatherapi.com/v1/current.json?key=64652500fd191149459573a5caa14049&q=Durban'));
-
-    if (response.statusCode == 200) {
-      var data = jsonDecode(response.body);
-      return "${data['current']['temp_c']}°C"; // Example: "28°C"
-    } else {
-      throw Exception('Failed to load temperature data');
-    }
+    return Future.delayed(const Duration(seconds: 1), () => "28°C");
   }
 }

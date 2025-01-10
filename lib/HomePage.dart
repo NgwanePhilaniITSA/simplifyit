@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'Components/Cards/BigCard.dart'; // Import BigCard component
-import 'Components/Cards/CustomeCard.dart'; // Import other necessary components
-import 'Controllers/HomeController.dart'; // Import HomeController
+import 'Components/Cards/CustomeCard.dart';
+import 'HomeController.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -50,7 +50,6 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Home"),
         backgroundColor: Colors.deepPurple,
       ),
       drawer: Drawer(
