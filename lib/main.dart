@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Flutter Demos',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
@@ -87,7 +87,6 @@ class _LandingPageState extends State<LandingPage>
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Fade-in animation for the welcome text
               AnimatedBuilder(
                 animation: _fadeAnimation,
                 builder: (context, child) {
