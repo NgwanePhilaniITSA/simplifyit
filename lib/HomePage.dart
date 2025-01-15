@@ -3,6 +3,7 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'Components/Cards/BigCard.dart'; // Import BigCard component
 import 'Components/Cards/CustomeCard.dart';
 import 'HomeController.dart';
+import 'Views/Home/Calender.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -115,7 +116,13 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
-            _buildDrawerItem(Icons.calendar_today, 'Calendar', () {}),
+            _buildDrawerItem(Icons.calendar_today, 'Calendar', () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const AnimatedCalendar()),
+              );
+            }),
             _buildDrawerItem(Icons.access_time, 'My TimeSheet', () {}),
             _buildDrawerItem(Icons.beach_access, 'My Leaves', () {}),
             _buildDrawerItem(Icons.settings, 'Settings', () {}),

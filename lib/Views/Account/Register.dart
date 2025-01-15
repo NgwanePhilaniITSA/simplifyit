@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
-import '../../Controllers/AccountController.dart';
+import '../../Services/AuthMethods.dart'; // Import AuthMethods
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -15,12 +15,12 @@ class _RegisterPageState extends State<RegisterPage> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  late final AccountController _accountController;
+  late final AuthMethods _authMethods;
 
   @override
   void initState() {
     super.initState();
-    _accountController = AccountController();
+    _authMethods = AuthMethods(); // Initialize AuthMethods
   }
 
   // Show Success Message
@@ -52,6 +52,19 @@ class _RegisterPageState extends State<RegisterPage> {
       btnOkColor: Colors.red,
       btnOkOnPress: () {},
     ).show();
+  }
+
+  // Google Registration Handler
+  void _registerWithGoogle() {
+    _authMethods.registerWithGoogleFromPage(
+      context,
+      () {
+        _showRegisterSuccessDialog(); // Show success dialog after Google registration
+      },
+      (errorMessage) {
+        _showErrorDialog(errorMessage); // Show error dialog on failure
+      },
+    );
   }
 
   @override
@@ -166,10 +179,9 @@ class _RegisterPageState extends State<RegisterPage> {
                   ElevatedButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        _accountController.register(
+                        _authMethods.registerWithEmail(
                           context,
                           _emailController.text,
-                          _emailController.text, // username as email for now
                           _passwordController.text,
                           _formKey,
                         );
@@ -192,6 +204,26 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                     ),
                     child: const Text("Register"),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // Google Registration Button
+                  ElevatedButton.icon(
+                    onPressed: _registerWithGoogle,
+                    icon: const Icon(Icons.login, color: Colors.red),
+                    label: Text(
+                      "Register with Google",
+                      style: GoogleFonts.poppins(fontSize: 16),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.black,
+                      side: const BorderSide(color: Colors.red),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
                   ),
 
                   const SizedBox(height: 20),

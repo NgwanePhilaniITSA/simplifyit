@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'Controllers/AccountController.dart';
 import 'ForgotPassword.dart';
-import 'Views/Account/Register.dart'; // Import your RegisterPage
+import 'Services/AuthMethods.dart';
+import 'Views/Account/Register.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -16,11 +17,13 @@ class _LoginPageState extends State<LoginPage> {
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   late final AccountController _accountController;
+  late final AuthMethods _authMethods;
 
   @override
   void initState() {
     super.initState();
     _accountController = AccountController();
+    _authMethods = AuthMethods(); // Initialize the AuthMethods
   }
 
   @override
@@ -63,7 +66,7 @@ class _LoginPageState extends State<LoginPage> {
               key: _formKey,
               child: Column(
                 children: [
-                  // Email Field with leading icon
+                  // Email Field
                   TextFormField(
                     controller: _emailController,
                     decoration: InputDecoration(
@@ -82,7 +85,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 20),
 
-                  // Password Field with leading icon
+                  // Password Field
                   TextFormField(
                     controller: _passwordController,
                     obscureText: true,
@@ -105,10 +108,9 @@ class _LoginPageState extends State<LoginPage> {
                   // Forgot Password Link
                   Row(
                     children: [
-                      const Spacer(), // Pushes the text to the right
+                      const Spacer(),
                       GestureDetector(
                         onTap: () {
-                          // Navigate to Forgot Password Page
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -156,6 +158,27 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 20),
 
+                  // Google Sign-In Button
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      _authMethods.signInWithGoogle(context);
+                    },
+                    icon: const Icon(Icons.login, color: Colors.red),
+                    label: Text(
+                      "Sign in with Google",
+                      style: GoogleFonts.poppins(fontSize: 16),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.black,
+                      side: const BorderSide(color: Colors.red),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
                   // Don't have an account? Register here
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -170,7 +193,6 @@ class _LoginPageState extends State<LoginPage> {
                       const SizedBox(width: 5),
                       GestureDetector(
                         onTap: () {
-                          // Navigate to Register Page
                           Navigator.push(
                             context,
                             MaterialPageRoute(
